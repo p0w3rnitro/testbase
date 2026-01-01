@@ -1,0 +1,51 @@
+# Cloudflare Worker for Anonymous Cross-Device Sync
+# Handles: watch progress, watchlist, provider settings, subtitle/player preferences
+name = "testbase"
+main = "src/index.ts"
+compatibility_date = "2025-12-07"
+
+# Free tier: 100,000 requests/day - plenty for sync operations
+# Sync is low-frequency (on app load + manual sync button)
+
+[observability]
+enabled = true
+
+[vars]
+LOG_LEVEL = "info"
+# ALLOWED_ORIGINS = "https://tv.vynx.cc,http://localhost:3000"
+
+# =============================================================================
+# D1 DATABASE - Create with: wrangler d1 create flyx-sync-db
+# =============================================================================
+[[d1_databases]]
+binding = "SYNC_DB"
+database_name = "flyx-sync-db"
+database_id = "3214c6a8-6991-4aaa-a72d-561fd37d69cc"
+
+# =============================================================================
+# KV NAMESPACE - For caching sync data (optional, improves performance)
+# =============================================================================
+# Create with: wrangler kv:namespace create "SYNC_CACHE"
+# [[kv_namespaces]]
+# binding = "SYNC_CACHE"
+# id = "your-kv-namespace-id"
+
+# Production environment
+[env.production]
+name = "flyx-sync"
+
+[env.production.vars]
+LOG_LEVEL = "warn"
+
+[env.production.observability]
+enabled = true
+
+# Development environment
+[env.development]
+name = "flyx-sync-dev"
+
+[env.development.vars]
+LOG_LEVEL = "debug"
+
+[env.development.observability]
+enabled = true
